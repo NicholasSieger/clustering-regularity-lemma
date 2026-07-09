@@ -85,6 +85,31 @@ def test_deviation_report_flags_large_deviation_cell():
     assert report["large_deviation_cell_count"] > 0
 
 
+def test_deviation_report_treats_low_gamma_cell_as_success():
+    graph = nx.Graph()
+    graph.add_edges_from(
+        [
+            (0, 1),
+            (0, 2),
+            (0, 3),
+            (1, 2),
+        ]
+    )
+    labels_A, labels_B = all_zero_edge_labels(graph)
+
+    report = compute_partition_deviation_report(
+        graph,
+        labels_A,
+        labels_B,
+        AlgorithmParameters(eps=0.1, dev_threshold=0.0, clustering_threshold=0.5),
+    )
+
+    assert report["passes"] is True
+    assert report["low_gamma_success_cell_count"] == 1
+    assert report["large_deviation_cell_count"] == 0
+    assert report["cells"][0]["low_gamma_success"] is True
+
+
 @pytest.mark.parametrize("case", verification_cases(), ids=lambda case: case.case_id)
 def test_generated_graph_clustering_verification(case):
     result = run_case_with_timeout(case, timeout_seconds=20.0, eps=0.1, max_depth=8)

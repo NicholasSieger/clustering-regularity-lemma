@@ -222,7 +222,12 @@ def compute_partition_deviation_report(
         gamma = 0.0 if pathweight == 0 else triangle_count / pathweight
         deviation = _cell_deviation(graph, cell["_groups"], gamma)
         threshold = parameters.dev_threshold * pathweight
-        large_deviation = pathweight > 0 and deviation > threshold
+        low_gamma_success = pathweight > 0 and gamma < parameters.clustering_threshold
+        large_deviation = (
+            pathweight > 0
+            and not low_gamma_success
+            and deviation > threshold
+        )
         if large_deviation:
             bad_pathweight += pathweight
         cell_reports.append(
@@ -234,6 +239,8 @@ def compute_partition_deviation_report(
                 "gamma": float(gamma),
                 "global_deviation": float(deviation),
                 "deviation_threshold": float(threshold),
+                "clustering_threshold": float(parameters.clustering_threshold),
+                "low_gamma_success": bool(low_gamma_success),
                 "large_deviation": bool(large_deviation),
             }
         )
@@ -252,6 +259,7 @@ def compute_partition_deviation_report(
         "allowed_bad_pathweight": float(allowed_bad_pathweight),
         "bad_pathweight_ratio": 0.0 if total_pathweight == 0 else bad_pathweight / total_pathweight,
         "cell_count": len(cell_reports),
+        "low_gamma_success_cell_count": sum(1 for cell in cell_reports if cell["low_gamma_success"]),
         "large_deviation_cell_count": sum(1 for cell in cell_reports if cell["large_deviation"]),
         "worst_cells": worst_cells,
         "cells": cell_reports,
@@ -286,6 +294,8 @@ def run_algorithm_case(case: VerificationCase, eps: float = 0.1, max_depth: int 
         "actual_density": nx.density(graph),
         "edge_count": graph.number_of_edges(),
         "seed": case.seed,
+        "eps": eps,
+        "max_depth": max_depth,
         "generator": generator_metadata,
         "partition_count_A": int(len(set(labels_A.tolist()))) if len(labels_A) else 0,
         "partition_count_B": int(len(set(labels_B.tolist()))) if len(labels_B) else 0,
@@ -308,6 +318,8 @@ def _worker(case_data, eps, max_depth, queue):
                 "requested_size": case.size,
                 "requested_density": case.density,
                 "seed": case.seed,
+                "eps": eps,
+                "max_depth": max_depth,
                 "error_type": type(exc).__name__,
                 "error": str(exc),
                 "traceback": traceback.format_exc(),
@@ -343,6 +355,8 @@ def run_case_with_timeout(
             "requested_size": case.size,
             "requested_density": case.density,
             "seed": case.seed,
+            "eps": eps,
+            "max_depth": max_depth,
             "timeout_seconds": timeout_seconds,
         }
 
@@ -355,6 +369,8 @@ def run_case_with_timeout(
             "requested_size": case.size,
             "requested_density": case.density,
             "seed": case.seed,
+            "eps": eps,
+            "max_depth": max_depth,
             "error": f"worker exited with code {process.exitcode} without returning a result",
         }
 
@@ -368,3 +384,67 @@ def write_verification_report(results: List[Dict], path: str = REPORT_PATH) -> N
     ordered = sorted(results, key=lambda item: item["case_id"])
     with open(path, "w", encoding="utf-8") as handle:
         json.dump(ordered, handle, indent=2)
+
+
+def merge_verification_report(results: List[Dict], path: str = REPORT_PATH) -> None:
+    existing = []
+    if os.path.exists(path):
+        with open(path, encoding="utf-8") as handle:
+            existing = json.load(handle)
+
+    by_case_id = {item["case_id"]: item for item in existing}
+    for result in results:
+        by_case_id[result["case_id"]] = result
+    write_verification_report(list(by_case_id.values()), path)
+
+
+def rerun_size_cases(
+    size: int,
+    timeout_seconds: float,
+    max_depth: int,
+    eps: float = 0.1,
+) -> List[Dict]:
+    results = []
+    for case in verification_cases():
+        if case.size != size:
+            continue
+        print(f"RUN {case.case_id}", flush=True)
+        result = run_case_with_timeout(
+            case,
+            timeout_seconds=timeout_seconds,
+            eps=eps,
+            max_depth=max_depth,
+        )
+        result["timeout_seconds"] = timeout_seconds
+        result["rerun_label"] = f"n{size}_max_depth{max_depth}_timeout{int(timeout_seconds)}"
+        results.append(result)
+        print(
+            f"  -> {result['status']} runtime={result.get('runtime_seconds', 0):.2f}s",
+            flush=True,
+        )
+    merge_verification_report(results)
+    return results
+
+
+def main() -> None:
+    import argparse
+    from collections import Counter
+
+    parser = argparse.ArgumentParser(description="Run clustering verification cases.")
+    parser.add_argument("--size", type=int, required=True)
+    parser.add_argument("--timeout", type=float, default=20.0)
+    parser.add_argument("--max-depth", type=int, default=8)
+    parser.add_argument("--eps", type=float, default=0.1)
+    args = parser.parse_args()
+
+    results = rerun_size_cases(
+        size=args.size,
+        timeout_seconds=args.timeout,
+        max_depth=args.max_depth,
+        eps=args.eps,
+    )
+    print("status_counts", dict(Counter(item["status"] for item in results)))
+
+
+if __name__ == "__main__":
+    main()
