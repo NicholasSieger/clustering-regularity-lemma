@@ -47,16 +47,24 @@ def apply_mask(nodes, mask):
 
 
 def expected_irregular_vertices(link_graph, A, B, gamma, delta):
+    positive, negative = expected_signed_irregular_vertices(link_graph, A, B, gamma, delta)
+    return positive | negative
+
+
+def expected_signed_irregular_vertices(link_graph, A, B, gamma, delta):
     b_set = set(B)
     deg_B_v = len(B)
     expected_degree = gamma * deg_B_v
     threshold = delta * deg_B_v
 
-    mask = []
+    positive = []
+    negative = []
     for u in A:
         observed_degree = sum(1 for neighbor in link_graph.neighbors(u) if neighbor in b_set)
-        mask.append(abs(observed_degree - expected_degree) > threshold)
-    return np.array(mask, dtype=bool)
+        difference = observed_degree - expected_degree
+        positive.append(difference > threshold)
+        negative.append(difference < -threshold)
+    return np.array(positive, dtype=bool), np.array(negative, dtype=bool)
 
 
 def common_neighbor_count(link_graph, u, u_prime, B):
@@ -110,11 +118,13 @@ def expected_split_masks(link_graph, A, B, gamma, delta, delta_2):
 
 def assert_irregular_vertices_match(link_graph, A, B, gamma, delta):
     task = Task(link_graph, (A, B), eps=0.1, irreg_vtx_threshold=delta)
-    actual_mask, actual_count = task.compute_irregular_vertices(gamma)
-    expected_mask = expected_irregular_vertices(link_graph, A, B, gamma, delta)
+    actual_positive, actual_positive_count, actual_negative, actual_negative_count = task.compute_irregular_vertices(gamma)
+    expected_positive, expected_negative = expected_signed_irregular_vertices(link_graph, A, B, gamma, delta)
 
-    assert np.array_equal(actual_mask, expected_mask)
-    assert actual_count == np.sum(expected_mask)
+    assert np.array_equal(actual_positive, expected_positive)
+    assert actual_positive_count == np.sum(expected_positive)
+    assert np.array_equal(actual_negative, expected_negative)
+    assert actual_negative_count == np.sum(expected_negative)
 
 
 def assert_local_deviation_matches(link_graph, A, B, gamma):
@@ -159,9 +169,10 @@ def test_irregular_vertices_on_complete_link_graph_for_delta_values(delta, expec
 
     assert_irregular_vertices_match(link_graph, A, B, gamma=0.5, delta=delta)
     task = Task(link_graph, (A, B), eps=0.1, irreg_vtx_threshold=delta)
-    _, actual_count = task.compute_irregular_vertices(gamma=0.5)
+    _, actual_count, _, negative_count = task.compute_irregular_vertices(gamma=0.5)
 
     assert actual_count == expected_count
+    assert negative_count == 0
 
 
 @pytest.mark.parametrize(
@@ -177,9 +188,12 @@ def test_irregular_vertices_on_empty_link_graph_for_delta_values(delta, expected
 
     assert_irregular_vertices_match(link_graph, A, B, gamma=0.5, delta=delta)
     task = Task(link_graph, (A, B), eps=0.1, irreg_vtx_threshold=delta)
-    _, actual_count = task.compute_irregular_vertices(gamma=0.5)
+    positive_mask, positive_count, negative_mask, negative_count = task.compute_irregular_vertices(gamma=0.5)
 
-    assert actual_count == expected_count
+    assert positive_count == 0
+    assert not np.any(positive_mask)
+    assert negative_count == expected_count
+    assert np.array_equal(negative_mask, expected_irregular_vertices(link_graph, A, B, 0.5, delta))
 
 
 @pytest.mark.parametrize(
@@ -207,10 +221,11 @@ def test_irregular_vertices_respect_A_and_B_masks(delta, expected_mask):
     B = apply_mask(B_full, [True, True, False, False, True])
 
     task = Task(link_graph, (A, B), eps=0.1, irreg_vtx_threshold=delta)
-    actual_mask, actual_count = task.compute_irregular_vertices(gamma=0.5)
+    actual_positive, actual_positive_count, actual_negative, actual_negative_count = task.compute_irregular_vertices(gamma=0.5)
+    actual_mask = actual_positive | actual_negative
 
     assert np.array_equal(actual_mask, expected_mask)
-    assert actual_count == np.sum(expected_mask)
+    assert actual_positive_count + actual_negative_count == np.sum(expected_mask)
     assert np.array_equal(actual_mask, expected_irregular_vertices(link_graph, A, B, 0.5, delta))
 
 
@@ -234,11 +249,13 @@ def test_irregular_vertices_use_constructor_threshold_not_eps_default():
     small_delta_task = Task(link_graph, (A, B), eps=0.5, irreg_vtx_threshold=0.49)
     large_delta_task = Task(link_graph, (A, B), eps=0.5, irreg_vtx_threshold=0.50)
 
-    _, small_delta_count = small_delta_task.compute_irregular_vertices(gamma=0.5)
-    _, large_delta_count = large_delta_task.compute_irregular_vertices(gamma=0.5)
+    _, small_delta_count, _, small_delta_negative_count = small_delta_task.compute_irregular_vertices(gamma=0.5)
+    _, large_delta_count, _, large_delta_negative_count = large_delta_task.compute_irregular_vertices(gamma=0.5)
 
     assert small_delta_count == len(A)
+    assert small_delta_negative_count == 0
     assert large_delta_count == 0
+    assert large_delta_negative_count == 0
 
 
 @pytest.mark.parametrize("gamma", [0.0, 0.5, 1.0])

@@ -322,7 +322,22 @@ class TestManager(unittest.TestCase):
         self.assertEqual(pathweight, 0)
         self.assertEqual(triangle_count, 0)
         self.assertEqual(gamma, 0.0)
-    
+
+    def test_iterate_quietly_handles_unsaved_direction(self):
+        """Queued directions with no saved partitions are zero-work branches."""
+        mgr = self.create_manager()
+        mgr.q = __import__("queue").Queue()
+        mgr.q.put("unsaved")
+
+        out = mgr.iterate()
+
+        self.assertEqual(out, ["unsaved"])
+        self.assertEqual(mgr.directions_considered, ["unsaved"])
+        self.assertEqual(mgr.partition_logs[-1]["pathweight"], 0)
+        self.assertEqual(mgr.partition_logs[-1]["triangle_count"], 0)
+        self.assertEqual(mgr.partition_logs[-1]["gamma"], 0.0)
+        self.assertEqual(mgr.partition_logs[-1]["failure_reason"], "PASSED_GAMMA_CHECK")
+
     def test_iterate_method_exists(self):
         """Test iterate method exists."""
         mgr = self.create_manager()

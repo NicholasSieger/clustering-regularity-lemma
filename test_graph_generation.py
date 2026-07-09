@@ -255,6 +255,14 @@ class TestClusteringRegularityAlgorithm(unittest.TestCase):
             labels_A, labels_B = result
             self.validate_partition_labels(labels_A, labels_B, G)
 
+    def test_random_graph_zero_edge_refinement_regression(self):
+        """Sparse refinements with zero local A-B edges should not crash."""
+        G = nx.gnp_random_graph(8, 0.3, seed=1)
+        result = self.run_algorithm_with_timeout(G, eps=0.1, max_depth=8)
+        if result is not None:
+            labels_A, labels_B = result
+            self.validate_partition_labels(labels_A, labels_B, G)
+
     def test_random_graph_sparse_small_8(self):
         """Test on sparse random graph with 7 vertices."""
         G = GraphGenerator.random_graph(7, edge_prob=0.35, seed=206)

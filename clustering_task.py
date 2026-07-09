@@ -1,11 +1,37 @@
 #!/usr/bin/env python3
-from scipy.sparse import csr_matrix # depending on graphs used i suppose
-import networkx as nx
-from networkx.readwrite import json_graph
-import json
-from networkx.algorithms import bipartite
-import queue as q
+from scipy.sparse import csr_matrix
 import numpy as np
+
+
+def _biadjacency_matrix(G, row_order, column_order):
+    """Build a robust bipartite adjacency matrix for possibly empty cuts."""
+    rows = list(row_order)
+    cols = list(column_order)
+    shape = (len(rows), len(cols))
+    if not rows or not cols:
+        return csr_matrix(shape, dtype=int)
+
+    row_index = {node: idx for idx, node in enumerate(rows)}
+    col_index = {node: idx for idx, node in enumerate(cols)}
+    row_values = []
+    col_values = []
+    data = []
+
+    for u, v, attrs in G.edges(data=True):
+        if u in row_index and v in col_index:
+            row_values.append(row_index[u])
+            col_values.append(col_index[v])
+        elif v in row_index and u in col_index:
+            row_values.append(row_index[v])
+            col_values.append(col_index[u])
+        else:
+            continue
+        data.append(attrs.get("weight", 1))
+
+    if not data:
+        return csr_matrix(shape, dtype=int)
+    return csr_matrix((data, (row_values, col_values)), shape=shape)
+
 
 class Task:
     def __init__(
@@ -24,11 +50,7 @@ class Task:
         self.dev_vtx_threshold = eps if dev_vtx_threshold is None else dev_vtx_threshold
         self.dev_split_threshold = eps**5 if dev_split_threshold is None else dev_split_threshold
 
-        self.M = bipartite.biadjacency_matrix(
-            self.G,
-            row_order=self.A,
-            column_order=self.B
-        )
+        self.M = _biadjacency_matrix(self.G, self.A, self.B)
 
         self.edges = int(self.M.sum())
 
@@ -84,7 +106,7 @@ class Task:
         common_neighbor_row = np.asarray(self.common_neighbor_matrix[u_star, :]).ravel()
         L_v = common_neighbor_row > self.dev_split_threshold * deg_B_v
 
-        matrix_row = self.M[u_star, :]
+        matrix_row = self.M[u_star:u_star + 1, :]
         if hasattr(matrix_row, "toarray"):
             matrix_row = matrix_row.toarray()
         mask_B = np.asarray(matrix_row).ravel() > 0

@@ -53,6 +53,49 @@ class TestTaskInitialization(unittest.TestCase):
         
         self.assertEqual(task.density, 0.0)
 
+    def test_zero_edge_matrix_has_expected_shape_and_degrees(self):
+        """Non-empty partitions with no crossing edges should be valid."""
+        G = nx.Graph()
+        G.add_nodes_from([0, 1], bipartite=0)
+        G.add_nodes_from([2, 3, 4], bipartite=1)
+
+        task = Task(G, ([0, 1], [2, 3, 4]), self.eps)
+
+        self.assertEqual(task.M.shape, (2, 3))
+        self.assertEqual(task.edges, 0)
+        self.assertEqual(task.density, 0.0)
+        self.assertTrue(np.array_equal(task.deg_A_v, np.array([0, 0])))
+        self.assertTrue(np.array_equal(task.deg_B_v, np.array([0, 0, 0])))
+        self.assertTrue(np.array_equal(task.pathweight, np.array([0, 0])))
+
+    def test_empty_A_matrix_has_expected_shape(self):
+        """Empty A should produce a correctly shaped zero matrix."""
+        G = nx.Graph()
+        G.add_nodes_from([2, 3], bipartite=1)
+
+        task = Task(G, ([], [2, 3]), self.eps)
+
+        self.assertEqual(task.M.shape, (0, 2))
+        self.assertEqual(task.edges, 0)
+        self.assertEqual(task.density, 0.0)
+        self.assertEqual(task.deg_A_v.shape[0], 0)
+        self.assertTrue(np.array_equal(task.deg_B_v, np.array([0, 0])))
+        self.assertEqual(task.pathweight.shape[0], 0)
+
+    def test_empty_B_matrix_has_expected_shape(self):
+        """Empty B should produce a correctly shaped zero matrix."""
+        G = nx.Graph()
+        G.add_nodes_from([0, 1], bipartite=0)
+
+        task = Task(G, ([0, 1], []), self.eps)
+
+        self.assertEqual(task.M.shape, (2, 0))
+        self.assertEqual(task.edges, 0)
+        self.assertEqual(task.density, 0.0)
+        self.assertTrue(np.array_equal(task.deg_A_v, np.array([0, 0])))
+        self.assertEqual(task.deg_B_v.shape[0], 0)
+        self.assertEqual(task.pathweight.shape[0], 0)
+
 
 class TestComputeLocalDeviation(unittest.TestCase):
     """Test compute_local_deviation method."""
@@ -101,19 +144,20 @@ class TestComputeIrregularVertices(unittest.TestCase):
         result = self.task.compute_irregular_vertices(gamma)
         
         self.assertIsInstance(result, tuple)
-        self.assertEqual(len(result), 2)
+        self.assertEqual(len(result), 4)
         
-        # First element should be numpy array
         self.assertIsInstance(result[0], np.ndarray)
-        # Second element should be int
         self.assertIsInstance(result[1], (int, np.integer))
+        self.assertIsInstance(result[2], np.ndarray)
+        self.assertIsInstance(result[3], (int, np.integer))
 
     def test_irregular_vertices_count_non_negative(self):
         """Test that irregular vertex count is non-negative."""
         gamma = 0.5
-        _, count = self.task.compute_irregular_vertices(gamma)
+        _, pos_count, _, neg_count = self.task.compute_irregular_vertices(gamma)
         
-        self.assertGreaterEqual(count, 0)
+        self.assertGreaterEqual(pos_count, 0)
+        self.assertGreaterEqual(neg_count, 0)
 
 
 class TestProduceNewMasks(unittest.TestCase):
@@ -149,6 +193,18 @@ class TestProduceNewMasks(unittest.TestCase):
         
         self.assertIsNotNone(self.task.local_dev)
         self.assertIsNotNone(self.task.spec_dev_matrix)
+
+    def test_produce_new_masks_on_zero_edge_matrix(self):
+        """Zero-edge matrices should produce masks without sparse slicing errors."""
+        G = nx.Graph()
+        G.add_nodes_from([0, 1], bipartite=0)
+        G.add_nodes_from([2, 3], bipartite=1)
+        task = Task(G, ([0, 1], [2, 3]), self.eps)
+
+        L_v, mask_B = task.produce_new_masks(gamma=0.0)
+
+        self.assertTrue(np.array_equal(L_v, np.zeros(2, dtype=bool)))
+        self.assertTrue(np.array_equal(mask_B, np.zeros(2, dtype=bool)))
 
 
 class TestEdgeCases(unittest.TestCase):
