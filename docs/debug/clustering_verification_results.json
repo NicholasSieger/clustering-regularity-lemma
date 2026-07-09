@@ -1,5 +1,209 @@
 [
   {
+    "case_id": "powerlaw_line_n100_d0p05_s20260721",
+    "status": "verification_failure",
+    "runtime_seconds": 6.765999999945052,
+    "family": "powerlaw_line",
+    "requested_size": 100,
+    "actual_size": 100,
+    "requested_density": 0.05,
+    "actual_density": 0.15555555555555556,
+    "edge_count": 770,
+    "seed": 20260721,
+    "generator": {
+      "model": "line_graph_powerlaw_expected_degree",
+      "source_nodes": 100,
+      "source_edges": 242,
+      "source_density": 0.04888888888888889,
+      "line_graph_nodes_before_sample": 242,
+      "line_graph_edges_before_sample": 2300
+    },
+    "partition_count_A": 2,
+    "partition_count_B": 2,
+    "directions_considered": [
+      "",
+      "i0",
+      "i1",
+      "i0i0",
+      "i0i1",
+      "i0i0i0",
+      "i0i0i1",
+      "i0i0i0i0",
+      "i0i0i0i1"
+    ],
+    "verification": {
+      "passes": false,
+      "total_pathweight": 32188,
+      "bad_pathweight": 28485,
+      "allowed_bad_pathweight": 128.75200000000004,
+      "bad_pathweight_ratio": 0.8849571268795825,
+      "cell_count": 2,
+      "large_deviation_cell_count": 1,
+      "worst_cells": [
+        {
+          "label_A": 0,
+          "label_B": 0,
+          "pathweight": 28485,
+          "triangle_count": 20350,
+          "gamma": 0.714411093558013,
+          "global_deviation": 12372.863207322895,
+          "deviation_threshold": 113.94000000000003,
+          "large_deviation": true
+        },
+        {
+          "label_A": 3,
+          "label_B": 3,
+          "pathweight": 3703,
+          "triangle_count": 3542,
+          "gamma": 0.9565217391304348,
+          "global_deviation": 0.0,
+          "deviation_threshold": 14.812000000000003,
+          "large_deviation": false
+        }
+      ],
+      "cells": [
+        {
+          "label_A": 0,
+          "label_B": 0,
+          "pathweight": 28485,
+          "triangle_count": 20350,
+          "gamma": 0.714411093558013,
+          "global_deviation": 12372.863207322895,
+          "deviation_threshold": 113.94000000000003,
+          "large_deviation": true
+        },
+        {
+          "label_A": 3,
+          "label_B": 3,
+          "pathweight": 3703,
+          "triangle_count": 3542,
+          "gamma": 0.9565217391304348,
+          "global_deviation": 0.0,
+          "deviation_threshold": 14.812000000000003,
+          "large_deviation": false
+        }
+      ]
+    }
+  },
+  {
+    "case_id": "powerlaw_line_n100_d0p15_s20260722",
+    "status": "max_depth",
+    "family": "powerlaw_line",
+    "requested_size": 100,
+    "requested_density": 0.15,
+    "seed": 20260722,
+    "error_type": "ValueError",
+    "error": "Direction code 'i0i0i0i0i0' (length 10) exceeds maximum depth 8",
+    "traceback": "Traceback (most recent call last):\n  File \"C:\\Mathematics\\Projects\\Quasirandom Clustering\\algorithmic_regularity\\clustering-regularity-lemma\\clustering_verification.py\", line 300, in _worker\n    queue.put(run_algorithm_case(case, eps=eps, max_depth=max_depth))\n  File \"C:\\Mathematics\\Projects\\Quasirandom Clustering\\algorithmic_regularity\\clustering-regularity-lemma\\clustering_verification.py\", line 274, in run_algorithm_case\n    labels_A, labels_B = runner.run()\n  File \"C:\\Mathematics\\Projects\\Quasirandom Clustering\\algorithmic_regularity\\clustering-regularity-lemma\\algorithm.py\", line 178, in run\n    dirs = self.iterate()\n  File \"C:\\Mathematics\\Projects\\Quasirandom Clustering\\algorithmic_regularity\\clustering-regularity-lemma\\algorithm.py\", line 299, in iterate\n    raise ValueError(\nValueError: Direction code 'i0i0i0i0i0' (length 10) exceeds maximum depth 8\n",
+    "runtime_seconds": 9.89000000001397
+  },
+  {
+    "case_id": "powerlaw_line_n30_d0p05_s20260718",
+    "status": "max_depth",
+    "family": "powerlaw_line",
+    "requested_size": 30,
+    "requested_density": 0.05,
+    "seed": 20260718,
+    "error_type": "ValueError",
+    "error": "Direction code 'i0i0i0d0i0' (length 10) exceeds maximum depth 8",
+    "traceback": "Traceback (most recent call last):\n  File \"C:\\Mathematics\\Projects\\Quasirandom Clustering\\algorithmic_regularity\\clustering-regularity-lemma\\clustering_verification.py\", line 300, in _worker\n    queue.put(run_algorithm_case(case, eps=eps, max_depth=max_depth))\n  File \"C:\\Mathematics\\Projects\\Quasirandom Clustering\\algorithmic_regularity\\clustering-regularity-lemma\\clustering_verification.py\", line 274, in run_algorithm_case\n    labels_A, labels_B = runner.run()\n  File \"C:\\Mathematics\\Projects\\Quasirandom Clustering\\algorithmic_regularity\\clustering-regularity-lemma\\algorithm.py\", line 178, in run\n    dirs = self.iterate()\n  File \"C:\\Mathematics\\Projects\\Quasirandom Clustering\\algorithmic_regularity\\clustering-regularity-lemma\\algorithm.py\", line 299, in iterate\n    raise ValueError(\nValueError: Direction code 'i0i0i0d0i0' (length 10) exceeds maximum depth 8\n",
+    "runtime_seconds": 3.547000000020489
+  },
+  {
+    "case_id": "powerlaw_line_n30_d0p15_s20260719",
+    "status": "max_depth",
+    "family": "powerlaw_line",
+    "requested_size": 30,
+    "requested_density": 0.15,
+    "seed": 20260719,
+    "error_type": "ValueError",
+    "error": "Direction code 'i0i0i0i0i0' (length 10) exceeds maximum depth 8",
+    "traceback": "Traceback (most recent call last):\n  File \"C:\\Mathematics\\Projects\\Quasirandom Clustering\\algorithmic_regularity\\clustering-regularity-lemma\\clustering_verification.py\", line 300, in _worker\n    queue.put(run_algorithm_case(case, eps=eps, max_depth=max_depth))\n  File \"C:\\Mathematics\\Projects\\Quasirandom Clustering\\algorithmic_regularity\\clustering-regularity-lemma\\clustering_verification.py\", line 274, in run_algorithm_case\n    labels_A, labels_B = runner.run()\n  File \"C:\\Mathematics\\Projects\\Quasirandom Clustering\\algorithmic_regularity\\clustering-regularity-lemma\\algorithm.py\", line 178, in run\n    dirs = self.iterate()\n  File \"C:\\Mathematics\\Projects\\Quasirandom Clustering\\algorithmic_regularity\\clustering-regularity-lemma\\algorithm.py\", line 299, in iterate\n    raise ValueError(\nValueError: Direction code 'i0i0i0i0i0' (length 10) exceeds maximum depth 8\n",
+    "runtime_seconds": 2.547000000020489
+  },
+  {
+    "case_id": "powerlaw_line_n30_d0p35_s20260720",
+    "status": "verification_failure",
+    "runtime_seconds": 2.109000000054948,
+    "family": "powerlaw_line",
+    "requested_size": 30,
+    "actual_size": 30,
+    "requested_density": 0.35,
+    "actual_density": 0.6344827586206897,
+    "edge_count": 276,
+    "seed": 20260720,
+    "generator": {
+      "model": "line_graph_powerlaw_expected_degree",
+      "source_nodes": 30,
+      "source_edges": 124,
+      "source_density": 0.2850574712643678,
+      "line_graph_nodes_before_sample": 124,
+      "line_graph_edges_before_sample": 1332
+    },
+    "partition_count_A": 2,
+    "partition_count_B": 2,
+    "directions_considered": [
+      "",
+      "i0",
+      "i1",
+      "i0i0",
+      "i0i1"
+    ],
+    "verification": {
+      "passes": false,
+      "total_pathweight": 11886,
+      "bad_pathweight": 4142,
+      "allowed_bad_pathweight": 47.54400000000001,
+      "bad_pathweight_ratio": 0.3484772000673061,
+      "cell_count": 2,
+      "large_deviation_cell_count": 1,
+      "worst_cells": [
+        {
+          "label_A": 0,
+          "label_B": 0,
+          "pathweight": 4142,
+          "triangle_count": 3390,
+          "gamma": 0.8184451955577016,
+          "global_deviation": 4960.460543977084,
+          "deviation_threshold": 16.568000000000005,
+          "large_deviation": true
+        },
+        {
+          "label_A": 1,
+          "label_B": 1,
+          "pathweight": 7744,
+          "triangle_count": 7392,
+          "gamma": 0.9545454545454546,
+          "global_deviation": 0.0,
+          "deviation_threshold": 30.976000000000006,
+          "large_deviation": false
+        }
+      ],
+      "cells": [
+        {
+          "label_A": 1,
+          "label_B": 1,
+          "pathweight": 7744,
+          "triangle_count": 7392,
+          "gamma": 0.9545454545454546,
+          "global_deviation": 0.0,
+          "deviation_threshold": 30.976000000000006,
+          "large_deviation": false
+        },
+        {
+          "label_A": 0,
+          "label_B": 0,
+          "pathweight": 4142,
+          "triangle_count": 3390,
+          "gamma": 0.8184451955577016,
+          "global_deviation": 4960.460543977084,
+          "deviation_threshold": 16.568000000000005,
+          "large_deviation": true
+        }
+      ]
+    }
+  },
+  {
     "case_id": "sbm_n100_d0p05_s20260712",
     "status": "verification_failure",
     "runtime_seconds": 1.2660000000614673,
@@ -175,6 +379,26 @@
     "requested_size": 500,
     "requested_density": 0.05,
     "seed": 20260715,
+    "timeout_seconds": 20.0
+  },
+  {
+    "case_id": "sbm_n500_d0p15_s20260716",
+    "status": "timeout",
+    "runtime_seconds": 20.030999999959022,
+    "family": "sbm",
+    "requested_size": 500,
+    "requested_density": 0.15,
+    "seed": 20260716,
+    "timeout_seconds": 20.0
+  },
+  {
+    "case_id": "sbm_n500_d0p35_s20260717",
+    "status": "timeout",
+    "runtime_seconds": 20.031000000075437,
+    "family": "sbm",
+    "requested_size": 500,
+    "requested_density": 0.35,
+    "seed": 20260717,
     "timeout_seconds": 20.0
   }
 ]
