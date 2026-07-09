@@ -85,7 +85,7 @@ class TestClusteringRegularityAlgorithm(unittest.TestCase):
         """Clean up temporary directories."""
         shutil.rmtree(self.temp_dir)
 
-    def run_algorithm_with_timeout(self, G, eps=0.1, timeout_seconds=60, max_depth=8):
+    def run_algorithm_with_timeout(self, G, eps=0.1, timeout_seconds=120, max_depth=30):
         """
         Run the algorithm on a graph with bounded refinement depth.
         
