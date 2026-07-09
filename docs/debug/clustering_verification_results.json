@@ -1,0 +1,180 @@
+[
+  {
+    "case_id": "sbm_n100_d0p05_s20260712",
+    "status": "verification_failure",
+    "runtime_seconds": 1.2660000000614673,
+    "family": "sbm",
+    "requested_size": 100,
+    "actual_size": 100,
+    "requested_density": 0.05,
+    "actual_density": 0.040606060606060604,
+    "edge_count": 201,
+    "seed": 20260712,
+    "generator": {
+      "model": "stochastic_block_model",
+      "block_sizes": [
+        25,
+        25,
+        25,
+        25
+      ],
+      "intra_probability": 0.1,
+      "inter_probability": 0.025
+    },
+    "partition_count_A": 1,
+    "partition_count_B": 1,
+    "directions_considered": [
+      ""
+    ],
+    "verification": {
+      "passes": false,
+      "total_pathweight": 2056,
+      "bad_pathweight": 2056,
+      "allowed_bad_pathweight": 8.224000000000002,
+      "bad_pathweight_ratio": 1.0,
+      "cell_count": 1,
+      "large_deviation_cell_count": 1,
+      "worst_cells": [
+        {
+          "label_A": 0,
+          "label_B": 0,
+          "pathweight": 2056,
+          "triangle_count": 42,
+          "gamma": 0.020428015564202335,
+          "global_deviation": 48.8145827340308,
+          "deviation_threshold": 8.224000000000002,
+          "large_deviation": true
+        }
+      ],
+      "cells": [
+        {
+          "label_A": 0,
+          "label_B": 0,
+          "pathweight": 2056,
+          "triangle_count": 42,
+          "gamma": 0.020428015564202335,
+          "global_deviation": 48.8145827340308,
+          "deviation_threshold": 8.224000000000002,
+          "large_deviation": true
+        }
+      ]
+    }
+  },
+  {
+    "case_id": "sbm_n100_d0p15_s20260713",
+    "status": "max_depth",
+    "family": "sbm",
+    "requested_size": 100,
+    "requested_density": 0.15,
+    "seed": 20260713,
+    "error_type": "ValueError",
+    "error": "Direction code 'i0i0i0i0i0' (length 10) exceeds maximum depth 8",
+    "traceback": "Traceback (most recent call last):\n  File \"C:\\Mathematics\\Projects\\Quasirandom Clustering\\algorithmic_regularity\\clustering-regularity-lemma\\clustering_verification.py\", line 300, in _worker\n    queue.put(run_algorithm_case(case, eps=eps, max_depth=max_depth))\n  File \"C:\\Mathematics\\Projects\\Quasirandom Clustering\\algorithmic_regularity\\clustering-regularity-lemma\\clustering_verification.py\", line 274, in run_algorithm_case\n    labels_A, labels_B = runner.run()\n  File \"C:\\Mathematics\\Projects\\Quasirandom Clustering\\algorithmic_regularity\\clustering-regularity-lemma\\algorithm.py\", line 178, in run\n    dirs = self.iterate()\n  File \"C:\\Mathematics\\Projects\\Quasirandom Clustering\\algorithmic_regularity\\clustering-regularity-lemma\\algorithm.py\", line 299, in iterate\n    raise ValueError(\nValueError: Direction code 'i0i0i0i0i0' (length 10) exceeds maximum depth 8\n",
+    "runtime_seconds": 6.765999999945052
+  },
+  {
+    "case_id": "sbm_n100_d0p35_s20260714",
+    "status": "timeout",
+    "runtime_seconds": 20.01500000001397,
+    "family": "sbm",
+    "requested_size": 100,
+    "requested_density": 0.35,
+    "seed": 20260714,
+    "timeout_seconds": 20.0
+  },
+  {
+    "case_id": "sbm_n30_d0p05_s20260709",
+    "status": "success",
+    "runtime_seconds": 0.3589999999385327,
+    "family": "sbm",
+    "requested_size": 30,
+    "actual_size": 30,
+    "requested_density": 0.05,
+    "actual_density": 0.041379310344827586,
+    "edge_count": 18,
+    "seed": 20260709,
+    "generator": {
+      "model": "stochastic_block_model",
+      "block_sizes": [
+        7,
+        7,
+        7,
+        9
+      ],
+      "intra_probability": 0.1,
+      "inter_probability": 0.025
+    },
+    "partition_count_A": 1,
+    "partition_count_B": 1,
+    "directions_considered": [
+      ""
+    ],
+    "verification": {
+      "passes": true,
+      "total_pathweight": 66,
+      "bad_pathweight": 0,
+      "allowed_bad_pathweight": 0.26400000000000007,
+      "bad_pathweight_ratio": 0.0,
+      "cell_count": 1,
+      "large_deviation_cell_count": 0,
+      "worst_cells": [
+        {
+          "label_A": 0,
+          "label_B": 0,
+          "pathweight": 66,
+          "triangle_count": 0,
+          "gamma": 0.0,
+          "global_deviation": 0.0,
+          "deviation_threshold": 0.26400000000000007,
+          "large_deviation": false
+        }
+      ],
+      "cells": [
+        {
+          "label_A": 0,
+          "label_B": 0,
+          "pathweight": 66,
+          "triangle_count": 0,
+          "gamma": 0.0,
+          "global_deviation": 0.0,
+          "deviation_threshold": 0.26400000000000007,
+          "large_deviation": false
+        }
+      ]
+    }
+  },
+  {
+    "case_id": "sbm_n30_d0p15_s20260710",
+    "status": "max_depth",
+    "family": "sbm",
+    "requested_size": 30,
+    "requested_density": 0.15,
+    "seed": 20260710,
+    "error_type": "ValueError",
+    "error": "Direction code 'i0i0i0d3d0' (length 10) exceeds maximum depth 8",
+    "traceback": "Traceback (most recent call last):\n  File \"C:\\Mathematics\\Projects\\Quasirandom Clustering\\algorithmic_regularity\\clustering-regularity-lemma\\clustering_verification.py\", line 300, in _worker\n    queue.put(run_algorithm_case(case, eps=eps, max_depth=max_depth))\n  File \"C:\\Mathematics\\Projects\\Quasirandom Clustering\\algorithmic_regularity\\clustering-regularity-lemma\\clustering_verification.py\", line 274, in run_algorithm_case\n    labels_A, labels_B = runner.run()\n  File \"C:\\Mathematics\\Projects\\Quasirandom Clustering\\algorithmic_regularity\\clustering-regularity-lemma\\algorithm.py\", line 178, in run\n    dirs = self.iterate()\n  File \"C:\\Mathematics\\Projects\\Quasirandom Clustering\\algorithmic_regularity\\clustering-regularity-lemma\\algorithm.py\", line 299, in iterate\n    raise ValueError(\nValueError: Direction code 'i0i0i0d3d0' (length 10) exceeds maximum depth 8\n",
+    "runtime_seconds": 2.859000000054948
+  },
+  {
+    "case_id": "sbm_n30_d0p35_s20260711",
+    "status": "max_depth",
+    "family": "sbm",
+    "requested_size": 30,
+    "requested_density": 0.35,
+    "seed": 20260711,
+    "error_type": "ValueError",
+    "error": "Direction code 'i0i0i0i0d0' (length 10) exceeds maximum depth 8",
+    "traceback": "Traceback (most recent call last):\n  File \"C:\\Mathematics\\Projects\\Quasirandom Clustering\\algorithmic_regularity\\clustering-regularity-lemma\\clustering_verification.py\", line 300, in _worker\n    queue.put(run_algorithm_case(case, eps=eps, max_depth=max_depth))\n  File \"C:\\Mathematics\\Projects\\Quasirandom Clustering\\algorithmic_regularity\\clustering-regularity-lemma\\clustering_verification.py\", line 274, in run_algorithm_case\n    labels_A, labels_B = runner.run()\n  File \"C:\\Mathematics\\Projects\\Quasirandom Clustering\\algorithmic_regularity\\clustering-regularity-lemma\\algorithm.py\", line 178, in run\n    dirs = self.iterate()\n  File \"C:\\Mathematics\\Projects\\Quasirandom Clustering\\algorithmic_regularity\\clustering-regularity-lemma\\algorithm.py\", line 299, in iterate\n    raise ValueError(\nValueError: Direction code 'i0i0i0i0d0' (length 10) exceeds maximum depth 8\n",
+    "runtime_seconds": 3.9209999999729916
+  },
+  {
+    "case_id": "sbm_n500_d0p05_s20260715",
+    "status": "timeout",
+    "runtime_seconds": 20.016000000061467,
+    "family": "sbm",
+    "requested_size": 500,
+    "requested_density": 0.05,
+    "seed": 20260715,
+    "timeout_seconds": 20.0
+  }
+]
