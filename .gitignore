@@ -3,3 +3,9 @@ __pycache__/
 *.py[cod]
 graphs_debug/
 partitions_debug/
+graphs/
+partitions/
+artifacts/
+runs/
+*.egg-info/
+docs/debug/*.json
