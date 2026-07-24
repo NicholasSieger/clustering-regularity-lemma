@@ -87,12 +87,26 @@ class EdgePartitionAssembler:
 
 
 def partition_labels(bitmasks: List[np.ndarray]) -> np.ndarray:
-    """Convert a list of bitmasks into integer partition labels."""
+    """Convert a disjoint, exhaustive family of bitmasks into labels."""
     if not bitmasks:
         return np.array([], dtype=int)
 
-    num_indices = bitmasks[0].shape[0]
-    labels = np.zeros(num_indices, dtype=int)
-    for i, bitmask in enumerate(bitmasks):
-        labels[bitmask] = i
-    return labels
+    masks = [np.asarray(bitmask, dtype=bool) for bitmask in bitmasks]
+    if any(mask.ndim != 1 for mask in masks):
+        raise ValueError("partition masks must be one-dimensional")
+
+    num_indices = masks[0].shape[0]
+    if any(mask.shape[0] != num_indices for mask in masks):
+        raise ValueError("partition masks must have the same length")
+
+    stacked = np.stack(masks)
+    membership = np.sum(stacked, axis=0)
+    uncovered = int(np.sum(membership == 0))
+    overlapping = int(np.sum(membership > 1))
+    if uncovered or overlapping:
+        raise ValueError(
+            "partition masks must be disjoint and exhaustive "
+            f"(uncovered={uncovered}, overlapping={overlapping})"
+        )
+
+    return np.argmax(stacked, axis=0).astype(int, copy=False)

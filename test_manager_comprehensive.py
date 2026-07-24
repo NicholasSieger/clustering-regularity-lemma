@@ -690,6 +690,106 @@ class TestPartitionLabels:
         labels = manager.partitionLabels([bitmask0, bitmask1])
         assert labels.dtype == np.int64 or labels.dtype == np.int32
 
+    @pytest.mark.parametrize(
+        ("bitmasks", "error_fragment"),
+        [
+            (
+                [
+                    np.array([True, False, False]),
+                    np.array([False, False, True]),
+                ],
+                "uncovered=1",
+            ),
+            (
+                [
+                    np.array([True, True, False]),
+                    np.array([False, True, True]),
+                ],
+                "overlapping=1",
+            ),
+        ],
+    )
+    def test_partition_labels_rejects_invalid_mask_families(
+        self,
+        small_complete_graph,
+        bitmasks,
+        error_fragment,
+    ):
+        manager = Manager(G=small_complete_graph, eps=0.5)
+
+        with pytest.raises(ValueError, match=error_fragment):
+            manager.partitionLabels(bitmasks)
+
+
+class TestGlobalPartitionRefinement:
+    """Tests for the disjoint global partition invariant."""
+
+    def test_common_refinement_is_disjoint_and_exhaustive(self):
+        parent = np.ones(6, dtype=bool)
+        cuts = {
+            0: [
+                np.array([True, True, True, False, False, False]),
+                np.array([True, False, False, True, False, False]),
+            ]
+        }
+
+        refined = AlgorithmRunner._common_refinement([parent], cuts)
+        membership = np.sum(np.asarray(refined, dtype=int), axis=0)
+
+        assert len(refined) == 4
+        assert np.array_equal(membership, np.ones(6, dtype=int))
+
+    def test_refinement_rechecks_cartesian_product(
+        self,
+        small_complete_graph,
+        temp_dirs,
+        monkeypatch,
+    ):
+        partition_dir, graph_dir = temp_dirs
+        runner = AlgorithmRunner(
+            small_complete_graph,
+            eps=0.25,
+            max_depth=4,
+            partition_dir=partition_dir,
+            graph_dir=graph_dir,
+        )
+        edges_A, edges_B = runner._get_edge_lists()
+        calls = []
+
+        def evaluate(direction, mask_A, mask_B, incidence_A, incidence_B):
+            calls.append((direction, mask_A.copy(), mask_B.copy()))
+            pathweight = sum(
+                sum(mask_A[index] for index, _ in incidence_A[vertex])
+                * sum(mask_B[index] for index, _ in incidence_B[vertex])
+                for vertex in runner.V2
+            )
+            stats = runner._base_stats(direction, pathweight, 0, 0.0)
+            if len(calls) == 1:
+                stats.failure_reason = "FAILED_DEVIATION_CHECK"
+                return {
+                    "stats": stats,
+                    "cut_A": np.arange(len(edges_A)) % 2 == 0,
+                    "cut_B": np.arange(len(edges_B)) % 2 == 0,
+                    "failed": True,
+                }
+            stats.failure_reason = "PASSED_GAMMA_CHECK"
+            return {
+                "stats": stats,
+                "cut_A": None,
+                "cut_B": None,
+                "failed": False,
+            }
+
+        monkeypatch.setattr(runner, "_evaluate_global_pair", evaluate)
+        parts_A, parts_B = runner._run_global_refinement()
+
+        assert len(parts_A) == 2
+        assert len(parts_B) == 2
+        assert len(calls) == 5
+        assert len(calls[1:]) == len(parts_A) * len(parts_B)
+        assert np.all(np.sum(np.asarray(parts_A, dtype=int), axis=0) == 1)
+        assert np.all(np.sum(np.asarray(parts_B, dtype=int), axis=0) == 1)
+
 
 class TestBitmaskDisjointness:
     """Tests for verifying that assembled partitions produce disjoint bitmasks."""

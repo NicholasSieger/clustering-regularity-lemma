@@ -1,0 +1,100 @@
+{
+  "schema_version": 2,
+  "generated_at_utc": "2026-07-23T21:33:30.526245+00:00",
+  "run_config": {
+    "scope": "additional_finite_scale_sbm",
+    "timeout_seconds": 120.0,
+    "max_direction_code_length": 30,
+    "verification_config": {
+      "eps": 0.05,
+      "exhaustive_edge_limit": 18,
+      "svd_dense_limit": 256,
+      "density_tolerance": 0.02,
+      "numerical_tolerance": 1e-12,
+      "witness_search": true,
+      "search_restarts": 12,
+      "coordinate_edge_limit": 64,
+      "coordinate_passes": 8
+    }
+  },
+  "cases": [
+    {
+      "case_id": "sbm_n48_d0p35_s20260801",
+      "status": "timeout",
+      "execution_status": "timeout",
+      "verification_status": null,
+      "runtime_seconds": 120.0,
+      "family": "sbm",
+      "requested_size": 48,
+      "requested_density": 0.35,
+      "seed": 20260801,
+      "eps": 0.05,
+      "max_direction_code_length": 30,
+      "timeout_seconds": 120.0,
+      "telemetry": {
+        "active_phase_at_exit": "verification",
+        "event_count": 515,
+        "runtime_seconds": 120.0,
+        "phase_durations_seconds": {
+          "generation": 0.03200000000651926,
+          "algorithm": 30.171999999991385
+        },
+        "directions_started": 253,
+        "directions_completed": 253,
+        "max_direction_code_length_seen": 24,
+        "max_logical_refinement_depth_seen": 12,
+        "last_direction_started": "i0i0i0i0i0i0d2i0i0d2i1d3",
+        "last_direction_completed": "i0i0i0i0i0i0d2i0i0d2i1d3",
+        "branch_counts": {
+          "FAILED_IRREGULARITY_CHECK": 54,
+          "FAILED_DEVIATION_CHECK": 36,
+          "PASSED_GAMMA_CHECK": 126,
+          "PASSED_ALL_CHECKS": 37
+        },
+        "generation": {
+          "case_id": "sbm_n48_d0p35_s20260801",
+          "family": "sbm",
+          "requested_size": 48,
+          "actual_size": 48,
+          "requested_density": 0.35,
+          "actual_density": 0.3484042553191489,
+          "density_error": 0.0015957446808510523,
+          "density_tolerance": 0.02,
+          "edge_count": 393,
+          "seed": 20260801,
+          "eps": 0.05,
+          "max_direction_code_length": 30,
+          "generator": {
+            "model": "stochastic_block_model",
+            "block_sizes": [
+              12,
+              12,
+              12,
+              12
+            ],
+            "intra_probability": 0.8224999999999998,
+            "inter_probability": 0.20562499999999995,
+            "candidate_count": 16,
+            "selected_model_seed": 20265846
+          },
+          "finite_scale_thresholds": {
+            "total_pathweight": 13266,
+            "max_degree": 22,
+            "delta_2_total_pathweight": 13.266000000000004,
+            "delta_5_total_pathweight": 2.9663677789512213,
+            "max_delta_1_local_deviation_threshold": 2.9577777777777783,
+            "max_delta_3_local_degree_tolerance": 7.638888888888891e-08,
+            "max_delta_4_irregular_edge_count_threshold": 0.0013664859862498717,
+            "count_scale_checks": {
+              "global_deviation": true,
+              "global_triangle_irregularity": true,
+              "local_deviation": true,
+              "local_triangle_degree_tolerance": false,
+              "local_triangle_irregular_edge_count": false
+            }
+          }
+        }
+      }
+    }
+  ]
+}

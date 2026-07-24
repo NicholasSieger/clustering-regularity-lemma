@@ -74,7 +74,9 @@ class Task:
 
         spec = common_neighbors - (gamma**2) * len(self.B)
         self.spec_dev_matrix = spec
-        return np.sum(spec)
+        self.local_deviation_gamma = gamma
+        self.local_dev = np.sum(spec)
+        return self.local_dev
 
     def compute_irregular_vertices(self, gamma) -> tuple[np.array, int]:
         deg_B_v = len(self.B)
@@ -87,7 +89,11 @@ class Task:
         return positive, np.sum(positive), negative, np.sum(negative)
 
     def produce_new_masks(self, gamma)-> tuple[np.array, np.array]: 
-        self.local_dev = self.compute_local_deviation(gamma)
+        if (
+            not hasattr(self, "local_deviation_gamma")
+            or self.local_deviation_gamma != gamma
+        ):
+            self.compute_local_deviation(gamma)
 
         if len(self.A) == 0 or len(self.B) == 0:
             return np.zeros(len(self.A), dtype=bool), np.zeros(len(self.B), dtype=bool)
